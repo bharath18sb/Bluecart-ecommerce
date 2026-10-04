@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<h1>Checkout</h1>
+
+<div class="cart-layout">
+  <form method="post" class="card form-card" id="checkout-form" novalidate>
+    {% csrf_token %}
+    <h2>Delivery details</h2>
+    {% include 'store/_form_fields.html' %}
+    <button type="submit" class="btn btn-primary btn-block btn-lg" id="place-order-btn">Place Order</button>
+  </form>
+
+  <aside class="card summary">
+    <h2>Order summary</h2>
+    <ul class="summary-items">
+      {% for row in rows %}
+        <li>
+          <span>{{ row.product.name }} <span class="muted">x {{ row.quantity }}</span></span>
+          <span>&#8377;{{ row.subtotal|floatformat:2 }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="summary-line summary-total"><span>Total</span><span>&#8377;{{ total|floatformat:2 }}</span></div>
+    <p class="muted small">The final total is calculated securely on our server when you place the order.</p>
+    <a href="{% url 'cart' %}" class="text-link center-link">Edit cart</a>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<section class="card form-card auth-card">
+  <h1>Welcome back</h1>
+  <p class="muted">Log in to check out and see your orders.</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% include 'store/_form_fields.html' %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="btn btn-primary btn-block btn-lg">Login</button>
+  </form>
+  <p class="auth-alt">New here? <a href="{% url 'register' %}">Create an account</a></p>
+</section>
+{% endblock %}

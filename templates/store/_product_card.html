@@ -1,0 +1,27 @@
+<article class="card product-card">
+  <a href="{% url 'product_detail' product.pk %}" class="product-image">
+    {% if product.image %}
+      <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+    {% else %}
+      <div class="image-placeholder">No image</div>
+    {% endif %}
+    {% if not product.in_stock %}<span class="badge badge-out">Out of stock</span>{% endif %}
+  </a>
+  <div class="product-body">
+    <h3 class="product-name"><a href="{% url 'product_detail' product.pk %}">{{ product.name }}</a></h3>
+    <p class="product-desc">{{ product.description|truncatewords:14 }}</p>
+    <div class="product-footer">
+      <span class="price">&#8377;{{ product.price|floatformat:2 }}</span>
+      {% if product.in_stock %}
+        <form method="post" action="{% url 'cart_add' product.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" value="1">
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+        </form>
+      {% else %}
+        <button type="button" class="btn btn-disabled btn-sm" disabled>Sold out</button>
+      {% endif %}
+    </div>
+  </div>
+</article>

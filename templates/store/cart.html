@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Your Cart{% endblock %}
+
+{% block content %}
+<h1>Shopping cart</h1>
+
+{% if rows %}
+<div class="cart-layout">
+  <div class="cart-items">
+    {% for row in rows %}
+      <article class="card cart-row">
+        <a href="{% url 'product_detail' row.product.pk %}" class="cart-thumb">
+          {% if row.product.image %}
+            <img src="{{ row.product.image.url }}" alt="{{ row.product.name }}">
+          {% else %}
+            <div class="image-placeholder small">No image</div>
+          {% endif %}
+        </a>
+
+        <div class="cart-info">
+          <h3><a href="{% url 'product_detail' row.product.pk %}">{{ row.product.name }}</a></h3>
+          <p class="muted">&#8377;{{ row.product.price|floatformat:2 }} each</p>
+          {% if not row.available %}
+            <p class="field-error">
+              {% if row.product.in_stock %}Only {{ row.product.stock }} in stock. Please lower the quantity.
+              {% else %}This product is out of stock. Please remove it.{% endif %}
+            </p>
+          {% endif %}
+        </div>
+
+        <form method="post" action="{% url 'cart_update' row.product.pk %}" class="cart-qty-form">
+          {% csrf_token %}
+          <label class="sr-only" for="qty-{{ row.product.pk }}">Quantity</label>
+          <div class="qty" data-qty>
+            <button type="button" data-step="-1" aria-label="Decrease quantity">&minus;</button>
+            <input type="number" id="qty-{{ row.product.pk }}" name="quantity" value="{{ row.quantity }}" min="0" max="{{ row.product.stock }}">
+            <button type="button" data-step="1" aria-label="Increase quantity">+</button>
+          </div>
+          <button type="submit" class="btn btn-outline btn-sm">Update</button>
+        </form>
+
+        <p class="cart-subtotal">&#8377;{{ row.subtotal|floatformat:2 }}</p>
+
+        <form method="post" action="{% url 'cart_remove' row.product.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn-link-danger" aria-label="Remove {{ row.product.name }}">Remove</button>
+        </form>
+      </article>
+    {% endfor %}
+  </div>
+
+  <aside class="card summary">
+    <h2>Order summary</h2>
+    <div class="summary-line"><span>Items</span><span>{{ cart_count }}</span></div>
+    <div class="summary-line summary-total"><span>Total</span><span>&#8377;{{ total|floatformat:2 }}</span></div>
+    {% if can_checkout %}
+      <a href="{% url 'checkout' %}" class="btn btn-primary btn-block btn-lg">Proceed to Checkout</a>
+      {% if not user.is_authenticated %}<p class="muted small">You will be asked to log in first.</p>{% endif %}
+    {% else %}
+      <button type="button" class="btn btn-disabled btn-block btn-lg" disabled>Proceed to Checkout</button>
+      <p class="field-error">Fix the items marked above to continue.</p>
+    {% endif %}
+    <a href="{% url 'product_list' %}" class="text-link center-link">Continue shopping</a>
+  </aside>
+</div>
+{% else %}
+  <div class="empty-state">
+    <h2>Your cart is empty</h2>
+    <p>Looks like you haven't added anything yet.</p>
+    <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg">Start shopping</a>
+  </div>
+{% endif %}
+{% endblock %}

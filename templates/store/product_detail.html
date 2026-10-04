@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="{% url 'product_list' %}">&larr; Back to products</a></p>
+
+<section class="detail">
+  <div class="detail-image card">
+    {% if product.image %}
+      <img src="{{ product.image.url }}" alt="{{ product.name }}">
+    {% else %}
+      <div class="image-placeholder">No image</div>
+    {% endif %}
+  </div>
+
+  <div class="detail-info">
+    <h1>{{ product.name }}</h1>
+    <p class="price price-lg">&#8377;{{ product.price|floatformat:2 }}</p>
+
+    {% if product.in_stock %}
+      <p class="stock stock-in">In stock ({{ product.stock }} available)</p>
+      {% if product.stock <= 5 %}<p class="stock-warning">Hurry, only {{ product.stock }} left!</p>{% endif %}
+    {% else %}
+      <p class="stock stock-out">Out of stock</p>
+    {% endif %}
+
+    <p class="detail-desc">{{ product.description|linebreaksbr }}</p>
+
+    {% if product.in_stock %}
+      <form method="post" action="{% url 'cart_add' product.pk %}" class="add-form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'cart' %}">
+        <label for="quantity">Quantity</label>
+        <div class="qty" data-qty>
+          <button type="button" data-step="-1" aria-label="Decrease quantity">&minus;</button>
+          <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" required>
+          <button type="button" data-step="1" aria-label="Increase quantity">+</button>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">Add to Cart</button>
+      </form>
+    {% else %}
+      <button type="button" class="btn btn-disabled btn-lg" disabled>Out of stock</button>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

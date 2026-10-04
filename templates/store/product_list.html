@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Products{% endblock %}
+
+{% block content %}
+<div class="section-head">
+  <h1>All products</h1>
+  <span class="muted">{{ products|length }} item{{ products|length|pluralize }}</span>
+</div>
+
+<form method="get" class="filter-bar" role="search">
+  <input type="search" name="q" value="{{ query }}" placeholder="Search products..." aria-label="Search products">
+  <select name="sort" aria-label="Sort products">
+    <option value="name" {% if sort == 'name' %}selected{% endif %}>Name (A to Z)</option>
+    <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: low to high</option>
+    <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: high to low</option>
+    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest first</option>
+  </select>
+  <select name="availability" aria-label="Filter by availability">
+    <option value="" {% if not availability %}selected{% endif %}>All products</option>
+    <option value="in_stock" {% if availability == 'in_stock' %}selected{% endif %}>In stock only</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Search</button>
+  {% if query or availability or sort != 'name' %}
+    <a href="{% url 'product_list' %}" class="btn btn-outline">Clear</a>
+  {% endif %}
+</form>
+
+{% if products %}
+  <div class="product-grid">
+    {% for product in products %}
+      {% include 'store/_product_card.html' %}
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <h2>No products found</h2>
+    <p>Try a different search word or clear the filters.</p>
+    <a href="{% url 'product_list' %}" class="btn btn-primary">Show all products</a>
+  </div>
+{% endif %}
+{% endblock %}

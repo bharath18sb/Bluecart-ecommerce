@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-text">
+    <h1>Everyday essentials, delivered with care.</h1>
+    <p>Discover quality products at honest prices. Browse the collection, add what you like to your cart and check out in a few clicks.</p>
+    <a href="{% url 'product_list' %}" class="btn btn-light btn-lg">Shop Now</a>
+  </div>
+  <ul class="hero-points">
+    <li>Simple, secure checkout</li>
+    <li>Track every order in your account</li>
+    <li>Live stock, so you never order what we don't have</li>
+  </ul>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2>Featured products</h2>
+    <a href="{% url 'product_list' %}" class="text-link">View all products</a>
+  </div>
+
+  {% if featured_products %}
+    <div class="product-grid">
+      {% for product in featured_products %}
+        {% include 'store/_product_card.html' %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>No featured products yet.</p>
+      <a href="{% url 'product_list' %}" class="btn btn-primary">Browse all products</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
